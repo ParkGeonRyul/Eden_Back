@@ -1,5 +1,5 @@
 {
-  "name": "48-3rd-teamhongc-backend",
+  "name": "Eden_backend",
   "version": "1.0.0",
   "description": "김도윤, 김민수, 박건률, 방수영, 최지준 ### 기술스택 정보 - Node.js - TypeORM - MongoDB - TypeScript",
   "main": "index.js",
@@ -27,15 +27,12 @@
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2",
     "mime": "^3.0.0",
     "mime-types": "^2.1.35",
     "mongoose": "^8.0.3",
     "multer": "^1.4.5-lts.1",
     "multer-s3": "^3.0.1",
-    "mysql2": "^3.6.0",
     "serve-favicon": "^2.5.0",
-    "typeorm": "^0.3.17",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
