@@ -1,38 +1,33 @@
 import { model, Schema } from "mongoose";
 
 const usersSchema = new Schema({
-  userId: { type: String, unique: true, require: true },
-  auths: [
+  auths:
     {
-      channel: { type: String, require: true },
-      id: { type: String, require: true },
+      userData : {
+        userId : { type: String, require: true, unique: true },
+        userEmail : { type: String, require: true, unique: true},
+        token : { type: String },
+        expireAt : { type: Date}
+      },
       secret: {
         bcrypt: { type: String, require: true },
         token: { type: String },
         expireAt: { type: String },
-      },
+      }
     },
-  ],
-  emails:
-    {
-      address: { type: String, unique: true, require: true },
-      verified: { type: Boolean },
-      token: { type: String },
-      expireAt: { type: String },
-    },
-  phoneNumber: { type: String },
-  address: { type: String },
   avatar: {
-    firstName: { type: String },
-    syrName: { type: String },
-    imageUrl: { type: String },
+    firstName: { type: String, require: true},
+    surName: { type: String, require: true},
+    userImage: {type: String }
   },
+  phoneNumber: { type: Number, require: true },
+  address: { type: String },
+  isAdmin: { type: Boolean },
   createdAt: { type: Date },
   updatedAt: { type: Date },
 });
 
-usersSchema.index({ userId: 1 }, { unique: true });
-usersSchema.index({ "emails.address": 1 }, { unique: true });
-usersSchema.index({ "auths.channel": 1, "auths.id": 1 }, { unique: true });
+usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
+usersSchema.index({ "auths.userData,userEmail": 1}, { unique: true });
 
 export const users = model("users", usersSchema);
