@@ -2,18 +2,22 @@ import 'dotenv/config'
 import mongoose from "mongoose";
 
 export const reconnectServer = async() => {
-  const mongooseStatus = mongoose.connection.readyState;
-
-  if (mongooseStatus !== 1) {
+  try {
     console.log("Reconnecting Database Server...");
     await mongoose.connect(`${process.env.DB_URI}`);
-    const reconnect = mongoose.connection.readyState;
-    if (reconnect !== 1) {
-      throw new Error(
-        "There is a problem with connecting to the server. Please contact server administrator."
-      );
+    const status = await connectStatus();
+
+    if (status !== 1) {
+      const err = new Error("test");
+      throw err;
     }
-    console.log("Database has been reconnected.");
-  }
-  return true;
+    console.log("Database has been reconnected")
+  } catch (err: unknown) {
+    // if (err instanceof CustomError_Class){
+      
+    // }
+  }};
+
+export const connectStatus = async() => {
+  return mongoose.connection.readyState;
 };
