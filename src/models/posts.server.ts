@@ -8,8 +8,8 @@ const postsSchema = new Schema({
   isSign: { type: Boolean, require: true},
   language: { type: String, require: true},
   category: { type: Number, require: true},
-  createdAt: { type: Date },
-  updatedAt: { type: Date },
+}, {
+  timestamps: true
 });
 
 postsSchema.index({ "content": 1 }, { unique: true });

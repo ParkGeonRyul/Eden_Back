@@ -11,6 +11,11 @@ const inquirysSchema = new Schema({
   inquiryId: { type: String },
   inquiryCreatedAt: { type: Date },
   reviewUpdatedAt: { type: Date }
+}, {
+  timestamps: {
+    createdAt: "inquiryCreatedAt",
+    updatedAt: "reviewUpdatedAt"
+  }
 });
 
 inquirysSchema.index({ "auths.userEmail": 1 }, { unique: true });

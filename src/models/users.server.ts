@@ -20,14 +20,14 @@ const usersSchema = new Schema({
     surName: { type: String, require: true},
     userImage: {type: String }
   },
-  phoneNumber: { type: Number, require: true },
+  phoneNumber: { type: String, require: true },
   address: { type: String },
-  isAdmin: { type: Boolean },
-  createdAt: { type: Date },
-  updatedAt: { type: Date },
+  isAdmin: { type: Boolean }
+}, {
+  timestamps: true
 });
 
 usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
-usersSchema.index({ "auths.userData,userEmail": 1}, { unique: true });
+usersSchema.index({ "auths.userData.userEmail": 1}, { unique: true });
 
 export const users = model("users", usersSchema);

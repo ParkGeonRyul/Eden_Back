@@ -1,9 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import favicon from 'serve-favicon'
-import path from 'path';
-import { routes } from './src/routes'
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import favicon from "serve-favicon";
+import path from "path";
+import { routes } from "./src/routes";
+import session from "express-session";
 
 export const createApp = () => {
   const app = express();
@@ -13,11 +14,18 @@ export const createApp = () => {
   app.use(express.json());
   app.use(routes);
 
+  app.use(session({
+    secret: "12345",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
   app.get("/ping", (req, res, next) => {
     res.status(200).json({ message: "pong" });
   });
 
-  app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+  app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
   app.all("*", (req, res, next) => {
     const err = new Error(`Can't fine ${req.originalUrl} on this server!`);
