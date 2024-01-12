@@ -9,7 +9,8 @@ const startServer = async () => {
   const PORT = process.env.PORT || 3000;
 
   app.listen(PORT, async () => {
-    await mongoose.connect(`${process.env.DB_URI}`)
+    await mongoose
+      .connect(`${process.env.DB_URI}`)
       .then(() => {
         console.log("Data Source has been initialized!");
         console.log(`Listening to request on 127.0.0.1:${PORT}`);
