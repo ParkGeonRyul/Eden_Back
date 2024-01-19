@@ -22,6 +22,7 @@ const usersSchema = new Schema(
     },
     phoneNumber: { type: String, require: true },
     address: { type: String },
+    birthDate : { type: Date},
     isAdmin: { type: Boolean },
   },
   {
