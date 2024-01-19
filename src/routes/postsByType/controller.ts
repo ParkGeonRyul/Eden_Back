@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   ValidationError,
   PropertyRequiredError,
-} from "/Users/junjii/Desktop/Eden_Back/src/utils/cunstomError";
+} from "../../utils/cunstomError";
 import { reportErrorMessage } from "../../utils/errorHandling";
 
 export const getError = async (req: Request, res: Response) => {
