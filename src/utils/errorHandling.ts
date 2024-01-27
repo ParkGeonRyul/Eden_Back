@@ -14,7 +14,9 @@ const isErrorWithMessage = (error: unknown): error is ErrorWithMessage => {
   );
 };
 
-const toErrorWithMessage = (maybeError: unknown): ErrorWithMessage => {
+const getErrorMessage = async (
+  maybeError: unknown
+): Promise<ErrorWithMessage> => {
   if (isErrorWithMessage(maybeError)) return maybeError;
 
   try {
@@ -24,14 +26,10 @@ const toErrorWithMessage = (maybeError: unknown): ErrorWithMessage => {
   }
 };
 
-export const getErrorMessage = (error: unknown) => {
-  return toErrorWithMessage(error);
-};
-
-export const reportErrorMessage = (error: unknown, res: Response) => {
-  const err = getErrorMessage(error);
+export const reportErrorMessage = async (error: unknown, res: Response) => {
+  const err = await getErrorMessage(error);
   console.log(err);
   return res
     .status(err.statusCode || 500)
-    .json({ Error: err.message, StatusCode: err.statusCode });
+    .json({ Error: err.message, StatusCode: err.statusCode || 500 });
 };
