@@ -4,6 +4,7 @@ import { mypageRouter } from "./mypage/route";
 import { userRouter } from "./(example)user/route";
 import { postsByTypeRouter } from "./postsByType/route";
 
+
 export const routes = express.Router();
 /*첫 번째 엔드포인트
 ex) route.use("/sample", sampleRouter)*/
