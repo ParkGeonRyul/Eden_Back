@@ -1,24 +1,40 @@
 import { Request, Response } from "express";
-import {
-  ValidationError,
-  PropertyRequiredError,
-} from "../../utils/cunstomError";
+import { PropertyRequiredError } from "../../utils/cunstomError";
 import { reportErrorMessage } from "../../utils/errorHandling";
-import { test } from "../../routes/postsByType/service";
+import { insertPostDB } from "../postsByType/service";
 
-export const getError = async (req: Request, res: Response) => {
+interface PostLoginReqBody {
+  content: string;
+  uploadFile: [{ fileUrl: string }];
+  isSign: boolean;
+  language: string;
+  category: number;
+}
+
+export const insertPost = async (req: Request, res: Response) => {
   try {
-    const a: string = req.body.a;
+    const {
+      content,
+      uploadFile,
+      isSign,
+      language,
+      category,
+    }: PostLoginReqBody = req.body;
 
-    if (!a) {
-      throw new PropertyRequiredError("No Property", 401);
-    } else if (typeof a !== "string") {
-      throw new PropertyRequiredError("No String", 401);
-    } else if (a !== "1") {
-      throw new ValidationError("Validation Error", 400);
+    if (!content || !isSign || !language || !category) {
+      const missingField = !content
+        ? "content"
+        : !isSign
+        ? "isSign"
+        : !language
+        ? "language"
+        : "category";
+      throw new PropertyRequiredError(`${missingField}`);
     }
-    // const testError = test();
-    return res.status(200).json({ message: "a는 1이래!!" });
+
+    await insertPostDB(content, uploadFile, isSign, language, category);
+
+    return res.status(200).json({ message: "SUCCESS CREATED DATA" });
   } catch (err: unknown) {
     return reportErrorMessage(err, res);
   }

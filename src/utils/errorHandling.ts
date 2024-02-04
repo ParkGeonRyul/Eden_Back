@@ -1,35 +1,40 @@
 import { Response } from "express";
+import { ValidationError, InternalServerError } from "./cunstomError";
 
 type ErrorWithMessage = {
   message: string;
-  statusCode?: number;
+  statusCode: number;
 };
 
-const isErrorWithMessage = (error: unknown): error is ErrorWithMessage => {
+const checkErrorMessage = (error: unknown): error is ErrorWithMessage => {
   return (
+    error instanceof ValidationError &&
     typeof error === "object" &&
     error !== null &&
     "message" in error &&
-    typeof (error as Record<string, unknown>).message === "string"
+    typeof (error as { message: unknown }).message === "string"
   );
 };
 
-const getErrorMessage = async (
-  maybeError: unknown
-): Promise<ErrorWithMessage> => {
-  if (isErrorWithMessage(maybeError)) return maybeError;
+const otherErrorMessage = (error: unknown): ErrorWithMessage => {
+  console.error(error);
+  return new InternalServerError();
+};
 
-  try {
-    return new Error(JSON.stringify(maybeError));
-  } catch {
-    return new Error(String(maybeError));
+const getErrorMessage = (maybeError: unknown): ErrorWithMessage => {
+  if (checkErrorMessage(maybeError)) {
+    console.error(maybeError);
+    return maybeError;
+  } else {
+    return otherErrorMessage(maybeError);
   }
 };
 
 export const reportErrorMessage = async (error: unknown, res: Response) => {
-  const err = await getErrorMessage(error);
-  console.log(err);
-  return res
-    .status(err.statusCode || 500)
-    .json({ Error: err.message, StatusCode: err.statusCode || 500 });
+  const err = getErrorMessage(error);
+
+  return res.status(err.statusCode).json({
+    message: err.message,
+    statusCode: err.statusCode,
+  });
 };
