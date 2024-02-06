@@ -1,10 +1,25 @@
 import bcrypt from "bcrypt";
 import { users } from "../../models/usersServer";
+import { ValidationError, InternalServerError } from "../../utils/cunstomError";
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
 
   return await bcrypt.hash(password, saltRounds);
+};
+
+export const getUserById = async (id: string) => {
+  const user = await users.findOne({
+    "auths.userData.userId": id,
+  });
+  return user;
+};
+
+export const getUserByEmail = async (email: string) => {
+  const user = await users.findOne({
+    "auths.userData.userEmail": email,
+  });
+  return user;
 };
 
 export const signUp = async (
@@ -20,24 +35,14 @@ export const signUp = async (
   const passwordRegex = /^(?=.{8,15})/;
 
   if (!emailRegex.test(email)) {
-    const error: any = new Error("Invalid_EMAIL");
-    error.statusCode = 400;
-
-    throw error;
+    throw new ValidationError("알맞은 이메일 형식이 아닙니다", 400);
   }
 
   if (!passwordRegex.test(password)) {
-    const error: any = new Error("Invalid_PASSWORD");
-    error.statusCode = 400;
-
-    throw error;
+    throw new ValidationError("알맞은 비밀번호 형식이 아닙니다", 400);
   }
-
   const hashedPassword: string = await hashPassword(password);
 
-  // users 데이터 넣기
-  //auths.userData.userId, auths.userData.userEmail,auths.secret.bcrypt,
-  // avatar.firstName, avatar.surName, phoneNumber
   const user = new users({
     auths: {
       userData: {
@@ -63,7 +68,7 @@ export const signUp = async (
       console.log("User saved successfully:", savedUser);
     })
     .catch((error) => {
-      console.error("Error saving user:", error);
-      throw error;
+      console.log(error);
+      throw new InternalServerError();
     });
 };
