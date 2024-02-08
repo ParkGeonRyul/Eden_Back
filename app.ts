@@ -18,11 +18,12 @@ export const createApp = () => {
   app.use(express.json());
   app.use(
     session({
-      secret: process.env.SESSION_SECRET as string,
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false },
+      secret: process.env.SESSION_SECRET as string, // 세션을 암호화
+      resave: false, // 세션을 항상 저장할지 결정 (false를 권장)
+      saveUninitialized: true, // 초기화 되지 않은채로 스토어에 저장할지를 결정
+      cookie: { secure: false, maxAge: 60 * 60 }, //시간 추가(1시간)
       store: MongoStore.create({
+        // 데이터를 저장하는 형식
         mongoUrl: process.env.DB_URI,
         collectionName: "sessions",
         ttl: parseInt(process.env.SESSION_TTL as string),

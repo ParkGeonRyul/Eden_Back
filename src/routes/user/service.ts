@@ -72,3 +72,19 @@ export const signUp = async (
       throw new InternalServerError();
     });
 };
+
+export const signIn = async (email: string, password: string) => {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    throw new ValidationError("가입된 이메일이 없습니다.", 400);
+  }
+
+  const result = await bcrypt.compare(password, user?.auths?.secret?.bcrypt!);
+
+  if (!result) {
+    throw new ValidationError("비밀번호가 다릅니다.", 400);
+  }
+
+  return user;
+};

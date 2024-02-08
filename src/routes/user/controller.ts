@@ -29,3 +29,21 @@ export const signUp = async (req: Request, res: Response) => {
     return reportErrorMessage(err, res);
   }
 };
+
+export const signIn = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await userService.signIn(email, password);
+
+    if (user) {
+      (req.session.isSignedIn = true),
+        (req.session.userId = user.auths?.userData?.userId!);
+    }
+
+    console.log(req.session);
+    res.status(200).json({ message: "로그인 성공" });
+  } catch (err: unknown) {
+    return reportErrorMessage(err, res);
+  }
+};
