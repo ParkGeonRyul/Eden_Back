@@ -4,3 +4,4 @@ import * as controller from "../user/controller";
 export const userRouter = express.Router();
 
 userRouter.post("/signup", controller.signUp);
+userRouter.post("/signin", controller.signIn);
