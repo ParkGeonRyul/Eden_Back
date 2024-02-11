@@ -1,12 +1,7 @@
-export const formatDate = (date: Date | null | undefined) => {
-  if (!date) return null;
-  const koreanDate = new Date(date)
-    .toLocaleDateString("ko-KR", {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-    })
-    .replace(/\. /g, ".")
-    .replace(/\.$/, "");
-  return koreanDate;
+export const formatDate = (date: Date) => {
+  const utcDate = new Date(date.toISOString());
+  const year = utcDate.getUTCFullYear().toString().slice(-2);
+  const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, "0");
+  const day = utcDate.getUTCDate().toString().padStart(2, "0");
+  return `${year}.${month}.${day}`;
 };
