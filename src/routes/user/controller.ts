@@ -39,7 +39,7 @@ export const signIn = async (req: Request, res: Response) => {
 
     if (user) {
       (req.session.isSignedIn = true),
-        (req.session.userId = user.auths?.userData?.userId!);
+        (req.session.userId = user.auths?.userData?.userId!.toString());
     }
 
     console.log(req.session);

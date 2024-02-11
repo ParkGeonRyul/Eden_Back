@@ -80,7 +80,10 @@ export const signIn = async (email: string, password: string) => {
     throw new ValidationError("가입된 이메일이 없습니다.", 400);
   }
 
-  const result = await bcrypt.compare(password, user?.auths?.secret?.bcrypt!);
+  const result = await bcrypt.compare(
+    password.toString(),
+    user?.auths?.secret?.bcrypt!.toString()
+  );
 
   if (!result) {
     throw new ValidationError("비밀번호가 다릅니다.", 400);

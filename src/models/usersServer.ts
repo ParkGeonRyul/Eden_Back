@@ -1,6 +1,29 @@
 import { model, Schema } from "mongoose";
-
-const usersSchema = new Schema(
+interface User {
+  auths: {
+    userData: {
+      userId: String;
+      userEmail: String;
+      token: String;
+      expireAt: Date;
+    };
+    secret: {
+      bcrypt: String;
+      token: String;
+      expireAt: String;
+    };
+  };
+  avatar: {
+    firstName: String;
+    surName: String;
+    userImage: String;
+  };
+  phoneNumber: String;
+  address: String;
+  birthDate: Date;
+  isAdmin: Boolean;
+}
+const usersSchema = new Schema<User>(
   {
     auths: {
       userData: {
@@ -22,7 +45,7 @@ const usersSchema = new Schema(
     },
     phoneNumber: { type: String, require: true },
     address: { type: String },
-    birthDate : { type: Date },
+    birthDate: { type: Date },
     isAdmin: { type: Boolean },
   },
   {
@@ -33,4 +56,4 @@ const usersSchema = new Schema(
 usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
 usersSchema.index({ "auths.userData.userEmail": 1 }, { unique: true });
 
-export const users = model("users", usersSchema);
+export const users = model<User>("users", usersSchema);

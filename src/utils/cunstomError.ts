@@ -17,7 +17,7 @@ export class PropertyRequiredError extends ValidationError {
   property: string;
 
   constructor(property: string) {
-    super("NO_PROPERTY " + property, 400);
+    super("NO_PROPERTY_" + property, 400);
     this.property = property;
   }
 }
@@ -25,7 +25,25 @@ export class DuplicatePropertyError extends ValidationError {
   property: string;
 
   constructor(property: string) {
-    super("DUPLICATE " + property, 400);
+    super("DUPLICATE_" + property, 400);
+    this.property = property;
+  }
+}
+
+export class NotFoundDataError extends ValidationError {
+  property: string;
+
+  constructor(property: string) {
+    super("NOT_FOUND_" + property, 400);
+    this.property = property;
+  }
+}
+
+export class InvalidPropertyError extends ValidationError {
+  property: string;
+
+  constructor(property: string) {
+    super("INVALID_" + property, 400);
     this.property = property;
   }
 }
