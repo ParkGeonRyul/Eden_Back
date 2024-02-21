@@ -10,6 +10,7 @@ const postsSchema = new Schema(
     ],
     isSign: { type: Boolean, require: true },
     language: { type: String, require: true },
+    view: { type: Number },
     category: { type: Number, require: true },
   },
   {

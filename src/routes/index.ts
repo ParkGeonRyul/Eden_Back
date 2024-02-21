@@ -1,7 +1,8 @@
 import express from "express";
 import { authenticateUser } from "../utils/auth";
 import { mypageRouter } from "./mypage/route";
-import { userRouter } from "./(example)user/route";
+// import { userRouter } from "./(example)user/route";
+import { userRouter } from "./user/route";
 import { postsByTypeRouter } from "./postsByType/route";
 
 export const routes = express.Router();
