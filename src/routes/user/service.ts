@@ -1,6 +1,18 @@
 import bcrypt from "bcrypt";
-import { users } from "../../models/usersServer";
-import { ValidationError, InternalServerError } from "../../utils/cunstomError";
+import { emailAuth, users } from "../../models/usersServer";
+import {
+  ValidationError,
+  InternalServerError,
+  fetchError,
+} from "../../utils/cunstomError";
+import { generateRandom, transporter } from "../../utils/email";
+
+interface MailOptions {
+  from: string | undefined;
+  to: string;
+  subject: string;
+  html: string;
+}
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -35,13 +47,21 @@ export const signUp = async (
   const passwordRegex = /^(?=.{8,15})/;
 
   if (!emailRegex.test(email)) {
-    throw new ValidationError("알맞은 이메일 형식이 아닙니다", 400);
+    throw new ValidationError("Invalid Email", 400);
   }
 
   if (!passwordRegex.test(password)) {
-    throw new ValidationError("알맞은 비밀번호 형식이 아닙니다", 400);
+    throw new ValidationError("Invalid Password", 400);
   }
   const hashedPassword: string = await hashPassword(password);
+
+  if (await getUserById(id)) {
+    throw new ValidationError("Duplicated ID.", 400); 
+  }
+
+  if (await getUserByEmail(email)) {
+    throw new ValidationError("Duplicated Email.", 400);
+  }
 
   const user = new users({
     auths: {
@@ -77,7 +97,7 @@ export const signIn = async (email: string, password: string) => {
   const user = await getUserByEmail(email);
 
   if (!user) {
-    throw new ValidationError("가입된 이메일이 없습니다.", 400);
+    throw new ValidationError("Wrong ID", 400);
   }
 
   const result = await bcrypt.compare(
@@ -86,8 +106,45 @@ export const signIn = async (email: string, password: string) => {
   );
 
   if (!result) {
-    throw new ValidationError("비밀번호가 다릅니다.", 400);
+    throw new ValidationError("Wrong Password.", 400);
   }
 
   return user;
+};
+
+export const emailAuthService = async (email: string) => {
+  const verifiedEmail = await getUserByEmail(email);
+  const findEmailAuth = await emailAuth.findOne({ email: email });
+
+  if (verifiedEmail) {
+    throw new ValidationError("Duplicated Email.", 400);
+  }
+
+  if (findEmailAuth) {
+    await emailAuth.deleteOne({ email: email });
+  }
+
+  const randomNumber = String(generateRandom(111111, 999999));
+
+  await emailAuth.create({
+    email: email,
+    token: randomNumber,
+  });
+
+  const mailOptions: MailOptions = {
+    from: process.env.NODEMAILER_USER,
+    to: email,
+    subject: "Von Dia - Email Authentication",
+    html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`
+  };
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        reject(new fetchError("NodeMailer Server Error")); 
+      } else {
+        resolve(info);
+      }
+    });
+  });
 };

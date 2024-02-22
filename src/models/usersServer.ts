@@ -53,7 +53,16 @@ const usersSchema = new Schema<User>(
   }
 );
 
+const emailAuthSchema = new Schema(
+  {
+    email : { type: String, require: true },
+    token : { type: String, require: true},
+    createdAt : { type: Date, expires: 600, default: Date.now }
+  }
+);
+
 usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
 usersSchema.index({ "auths.userData.userEmail": 1 }, { unique: true });
 
 export const users = model<User>("users", usersSchema);
+export const emailAuth = model("emailAuth", emailAuthSchema);
