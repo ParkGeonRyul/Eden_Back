@@ -47,3 +47,12 @@ export class InvalidPropertyError extends ValidationError {
     this.property = property;
   }
 }
+
+export class fetchError extends ValidationError {
+  property: string;
+
+  constructor(property: string) {
+    super("FETCHERROR_" + property, 500);
+    this.property = property;
+  }
+}

@@ -1,6 +1,18 @@
 import bcrypt from "bcrypt";
-import { users } from "../../models/usersServer";
-import { ValidationError, InternalServerError } from "../../utils/cunstomError";
+import { emailAuth, users } from "../../models/usersServer";
+import {
+  ValidationError,
+  InternalServerError,
+  fetchError,
+} from "../../utils/cunstomError";
+import { generateRandom, transporter } from "../../utils/email";
+
+interface MailOptions {
+  from: string | undefined;
+  to: string;
+  subject: string;
+  text: string;
+}
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -90,4 +102,42 @@ export const signIn = async (email: string, password: string) => {
   }
 
   return user;
+};
+
+export const emailAuthService = async (email: string) => {
+  let errorCode: any = {};
+  const verifiedEmail = await getUserByEmail(email);
+  const findEmailAuth = await emailAuth.findOne({ email: email });
+
+  if (verifiedEmail) {
+    throw new ValidationError("Duplicated Email.", 400);
+  }
+
+  if (findEmailAuth) {
+    await emailAuth.deleteOne({ email: email });
+  }
+
+  const randomNumber = String(generateRandom(111111, 999999));
+
+  await emailAuth.create({
+    email: email,
+    token: randomNumber,
+  });
+
+  const mailOptions: MailOptions = {
+    from: process.env.NODEMAILER_USER,
+    to: email,
+    subject: "von dia - 이메일 인증",
+    text: `본 코드는 10분 간 유효합니다. ${randomNumber}`,
+  };
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        reject(new fetchError("nodeMailer Server Error")); 
+      } else {
+        resolve(info);
+      }
+    });
+  });
 };
