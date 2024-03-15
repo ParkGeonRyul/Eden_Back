@@ -132,7 +132,7 @@ export const emailAuthService = async (email: string) => {
   });
 
   const mailOptions: MailOptions = {
-    from: process.env.NODEMAILER_USER,
+    from: process.env.USERCODE,
     to: email,
     subject: "Von Dia - Email Authentication",
     html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`
