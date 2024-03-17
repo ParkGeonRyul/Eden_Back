@@ -4,6 +4,7 @@ import {
   ValidationError,
   InternalServerError,
   fetchError,
+  NotFoundDataError,
 } from "../../utils/cunstomError";
 import { generateRandom, transporter } from "../../utils/email";
 
@@ -134,7 +135,7 @@ export const emailAuthService = async (email: string) => {
   const mailOptions: MailOptions = {
     from: process.env.USERCODE,
     to: email,
-    subject: "Von Dia - Email Authentication",
+    subject: "Bon Dia - Email Authentication",
     html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`
   };
 
@@ -148,3 +149,14 @@ export const emailAuthService = async (email: string) => {
     });
   });
 };
+
+export const emailConfirm = async(email: string, token: string) => {
+  const findEmail = await emailAuth.findOne({ email: email });
+  console.log(findEmail?.token);
+
+  if (!findEmail || token !== findEmail?.token) {
+    throw new NotFoundDataError("TOKEN");
+  };
+
+  return true;
+}
