@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import { emailAuth, users } from "../../models/usersServer";
 import {
-  ValidationError,
   InternalServerError,
   fetchError,
+  InvalidPropertyError,
+  DuplicatePropertyError,
+  NotFoundDataError,
 } from "../../utils/cunstomError";
 import { generateRandom, transporter } from "../../utils/email";
 
@@ -47,20 +49,20 @@ export const signUp = async (
   const passwordRegex = /^(?=.{8,15})/;
 
   if (!emailRegex.test(email)) {
-    throw new ValidationError("Invalid Email", 400);
+    throw new InvalidPropertyError("Email");
   }
 
   if (!passwordRegex.test(password)) {
-    throw new ValidationError("Invalid Password", 400);
+    throw new InvalidPropertyError("Password");
   }
   const hashedPassword: string = await hashPassword(password);
 
   if (await getUserById(id)) {
-    throw new ValidationError("Duplicated ID.", 400); 
+    throw new DuplicatePropertyError("ID."); 
   }
 
   if (await getUserByEmail(email)) {
-    throw new ValidationError("Duplicated Email.", 400);
+    throw new DuplicatePropertyError("Email.");
   }
 
   const user = new users({
@@ -84,11 +86,10 @@ export const signUp = async (
 
   return user
     .save()
-    .then((savedUser) => {
-      console.log("User saved successfully:", savedUser);
+    .then(() => {
+      console.log("User saved successfully:");
     })
     .catch((error) => {
-      console.log(error);
       throw new InternalServerError();
     });
 };
@@ -97,7 +98,7 @@ export const signIn = async (email: string, password: string) => {
   const user = await getUserByEmail(email);
 
   if (!user) {
-    throw new ValidationError("Wrong ID", 400);
+    throw new NotFoundDataError("ID");
   }
 
   const result = await bcrypt.compare(
@@ -106,7 +107,7 @@ export const signIn = async (email: string, password: string) => {
   );
 
   if (!result) {
-    throw new ValidationError("Wrong Password.", 400);
+    throw new InvalidPropertyError("Password.");
   }
 
   return user;
@@ -117,7 +118,7 @@ export const emailAuthService = async (email: string) => {
   const findEmailAuth = await emailAuth.findOne({ email: email });
 
   if (verifiedEmail) {
-    throw new ValidationError("Duplicated Email.", 400);
+    throw new DuplicatePropertyError("Email.");
   }
 
   if (findEmailAuth) {
@@ -134,7 +135,7 @@ export const emailAuthService = async (email: string) => {
   const mailOptions: MailOptions = {
     from: process.env.USERCODE,
     to: email,
-    subject: "Von Dia - Email Authentication",
+    subject: "Bon Dia - Email Authentication",
     html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`
   };
 
