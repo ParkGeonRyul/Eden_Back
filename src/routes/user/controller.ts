@@ -49,3 +49,16 @@ export const emailVerification = async (req: Request, res: Response) => {
     reportErrorMessage(err, res);
   }
 };
+
+export const emailConfirm = async (req: Request, res: Response) => {
+  try{
+    const { email, token } = req.body;
+
+    await userService.emailConfirm(email, token);
+
+    res.status(200).json({message : "Token has confirm"})
+  }
+  catch(err: unknown) {
+    reportErrorMessage(err, res);    
+  }
+}

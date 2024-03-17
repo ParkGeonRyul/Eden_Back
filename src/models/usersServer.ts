@@ -23,6 +23,12 @@ interface User {
   birthDate: Date;
   isAdmin: Boolean;
 }
+
+interface EmailAuth {
+  email: String,
+  token: String,
+  createdAt: Date
+}
 const usersSchema = new Schema<User>(
   {
     auths: {
@@ -53,7 +59,7 @@ const usersSchema = new Schema<User>(
   }
 );
 
-const emailAuthSchema = new Schema(
+const emailAuthSchema = new Schema<EmailAuth>(
   {
     email : { type: String, require: true },
     token : { type: String, require: true},
@@ -65,4 +71,4 @@ usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
 usersSchema.index({ "auths.userData.userEmail": 1 }, { unique: true });
 
 export const users = model<User>("users", usersSchema);
-export const emailAuth = model("emailAuth", emailAuthSchema);
+export const emailAuth = model<EmailAuth>("emailAuth", emailAuthSchema);
