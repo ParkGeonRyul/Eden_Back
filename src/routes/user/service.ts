@@ -149,3 +149,14 @@ export const emailAuthService = async (email: string) => {
     });
   });
 };
+
+export const emailConfirm = async(email: string, token: string) => {
+  const findEmail = await emailAuth.findOne({ email: email });
+  console.log(findEmail?.token);
+
+  if (!findEmail || token !== findEmail?.token) {
+    throw new NotFoundDataError("TOKEN");
+  };
+
+  return true;
+}
