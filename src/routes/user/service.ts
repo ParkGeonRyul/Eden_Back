@@ -49,7 +49,7 @@ export const signUp = async (
   const passwordRegex = /^(?=.{8,15})/;
 
   if (!emailRegex.test(email)) {
-    throw new InvalidPropertyError("Email");
+    throw new Error("Email");
   }
 
   if (!passwordRegex.test(password)) {
@@ -58,7 +58,7 @@ export const signUp = async (
   const hashedPassword: string = await hashPassword(password);
 
   if (await getUserById(id)) {
-    throw new DuplicatePropertyError("ID."); 
+    throw new DuplicatePropertyError("ID.");
   }
 
   if (await getUserByEmail(email)) {
@@ -136,13 +136,13 @@ export const emailAuthService = async (email: string) => {
     from: process.env.USERCODE,
     to: email,
     subject: "Bon Dia - Email Authentication",
-    html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`
+    html: `<h1>This code is valid for 10 minutes.<h1><br><h2>${randomNumber}`,
   };
 
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        reject(new fetchError("NodeMailer Server Error")); 
+        reject(new fetchError("NodeMailer Server Error"));
       } else {
         resolve(info);
       }
@@ -150,13 +150,13 @@ export const emailAuthService = async (email: string) => {
   });
 };
 
-export const emailConfirm = async(email: string, token: string) => {
+export const emailConfirm = async (email: string, token: string) => {
   const findEmail = await emailAuth.findOne({ email: email });
   console.log(findEmail?.token);
 
   if (!findEmail || token !== findEmail?.token) {
     throw new NotFoundDataError("TOKEN");
-  };
+  }
 
   return true;
-}
+};

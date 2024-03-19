@@ -1,5 +1,6 @@
+import { UnauthorizedAccessError } from "../utils/cunstomError";
 import { Request, Response, NextFunction } from "express";
-import { users } from "../models/usersServer";
+import { reportErrorMessage } from "../utils/errorHandling";
 
 export const authenticateUser = async (
   req: Request,
@@ -8,15 +9,15 @@ export const authenticateUser = async (
 ) => {
   try {
     console.log("req.session =", req.session);
+
     if (req.session && req.session.isSignedIn) {
       req.user = req.session;
 
       next();
     } else {
-      return res.json({ isAuth: false, authSuccess: false });
+      throw new UnauthorizedAccessError(); // isAuth: false, authSuccess: false
     }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Internal Server Error" });
+  } catch (err: unknown) {
+    return reportErrorMessage(err, res);
   }
 };

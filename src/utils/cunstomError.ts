@@ -48,6 +48,12 @@ export class InvalidPropertyError extends ValidationError {
   }
 }
 
+export class UnauthorizedAccessError extends ValidationError {
+  constructor() {
+    super("UNAUTHORIZED_ACCESS", 401);
+  }
+}
+
 export class fetchError extends ValidationError {
   property: string;
 

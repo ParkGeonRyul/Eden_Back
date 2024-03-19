@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+
 interface User {
   auths: {
     userData: {
@@ -25,9 +26,9 @@ interface User {
 }
 
 interface EmailAuth {
-  email: String,
-  token: String,
-  createdAt: Date
+  email: String;
+  token: String;
+  createdAt: Date;
 }
 const usersSchema = new Schema<User>(
   {
@@ -59,13 +60,11 @@ const usersSchema = new Schema<User>(
   }
 );
 
-const emailAuthSchema = new Schema<EmailAuth>(
-  {
-    email : { type: String, require: true },
-    token : { type: String, require: true},
-    createdAt : { type: Date, expires: 600, default: Date.now }
-  }
-);
+const emailAuthSchema = new Schema<EmailAuth>({
+  email: { type: String, require: true },
+  token: { type: String, require: true },
+  createdAt: { type: Date, expires: 600, default: Date.now },
+});
 
 usersSchema.index({ "auths.userData.userId": 1 }, { unique: true });
 usersSchema.index({ "auths.userData.userEmail": 1 }, { unique: true });

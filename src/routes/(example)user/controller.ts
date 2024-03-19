@@ -40,6 +40,7 @@ export const signIn = async (req: Request, res: Response) => {
     if (user) {
       req.session.isSignedIn = true;
       req.session.userId = userId;
+      req.session.userEmail = user.auths.userData.userEmail as string;
 
       console.log("sessionId =", req.session.id);
 
