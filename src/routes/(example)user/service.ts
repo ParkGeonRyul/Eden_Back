@@ -1,6 +1,6 @@
 import { users } from "../../models/usersServer";
 
-export const checkExistingUser = async (userId: String, userEmail: String) => {
+export const checkExistingUser = async (userId: string, userEmail: string) => {
   try {
     const existingUser = await users.findOne({
       $and: [
@@ -15,12 +15,12 @@ export const checkExistingUser = async (userId: String, userEmail: String) => {
 };
 
 export const createUser = async (
-  userId: String,
-  userEmail: String,
-  password: String,
-  firstName: String,
-  surName: String,
-  phoneNumber: String
+  userId: string,
+  userEmail: string,
+  password: string,
+  firstName: string,
+  surName: string,
+  phoneNumber: string
 ) => {
   try {
     const user = new users({
@@ -48,7 +48,7 @@ export const createUser = async (
   }
 };
 
-export const getUser = async (userId: String, password: String) => {
+export const getUser = async (userId: string, password: string) => {
   try {
     return await users.findOne({
       "auths.userData.userId": userId,
